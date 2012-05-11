@@ -1,15 +1,19 @@
-Source: powerpc-wrs-vxworks-wrs-ip
-Section: unknown
+Source: powerpc-wrs-vxworks-wrs-ip1
+Section: devel
 Priority: extra
 Maintainer: Robert Blair Mason Jr. <rbmj@verizon.net>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.2
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/powerpc-wrs-vxworks-wrs-ip.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/powerpc-wrs-vxworks-wrs-ip.git;a=summary
+Homepage: https://github.com/rbmj/wrs-ip1
+Vcs-Git: git://github.com/rbmj/wrs-ip1.git
+Vcs-Browser: https://github.com/rbmj/wrs-ip1
 
-Package: powerpc-wrs-vxworks-wrs-ip
+Package: powerpc-wrs-vxworks-wrs-ip1
 Architecture: all
-Depends: ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: ${misc:Depends}, wget
+Provides: powerpc-wrs-vxworks-wrs-ip
+Description: Dummy Package to provide WindRiver IP for VxWorks
+ This package downloads, installs, and configures the WindRiver
+ Intellectual Property needed perform builds targeting VxWorks 6.3.
+ Though the download scripts provided in the package are free, note
+ that the files installed in the download process are NON-FREE.
