@@ -34,19 +34,27 @@ case "$1" in
 		mkdir -p "$CONF_DIR"
 
 		#download gccdist and unzip
-		wget "$GCCDIST_URL" -O "$TMP_DIR/gccdist.zip"
-		unzip -qo "$TMP_DIR/gccdist.zip" -d "$TMP_DIR"
+		echo -n "Downloading gccdist... "
+		wget -q "$GCCDIST_URL" -O "$TMP_DIR/gccdist.zip"
+		echo "done."
 
+		#extract
+		echo -n "Extracting... "
+		unzip -qo "$TMP_DIR/gccdist.zip" -d "$TMP_DIR"
+		echo "done."
+
+		#perform install
+		echo -n "Installing... "
 		#copy scripts to proper location
 		SCRIPT_LOC="$TMP_DIR/gccdist/WindRiver/vxworks-6.3/host"
-		cp -R "$SCRIPT_LOC" "$WIND_BASE/host"
+		cp -R "$SCRIPT_LOC" "$WIND_BASE"
 		
 		#get list of files just installed
 		find "$SCRIPT_LOC" -type f | sed "s|$SCRIPT_LOC|$WIND_BASE/host|" > $INSTALL_LIST
 
 		#copy headers to proper location
 		HEADER_LOC="$TMP_DIR/gccdist/WindRiver/vxworks-6.3/target/h"
-		cp -R "$HEADER_LOC" "$TOOL_DIR/sys-include"
+		cp -R "$HEADER_LOC/." "$TOOL_DIR/sys-include"
 
 		#get list of files just installed
 		find "$HEADER_LOC" -type f | sed "s|$HEADER_LOC|$TOOL_DIR/sys-include|" >> $INSTALL_LIST
@@ -60,7 +68,10 @@ case "$1" in
 		echo "$TOOL_DIR/include" >> $INSTALL_LIST
 
 		#clean up
-		rm -rf "$TMP_DIR/gccdist.zip" "$TMP_DIR/gccdist"
+		rm -rf "$TMP_DIR"
+
+		echo "done."
+
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

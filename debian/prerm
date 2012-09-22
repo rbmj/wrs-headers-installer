@@ -30,7 +30,8 @@ case "$1" in
 	do
             rm -f "$f"
         done
-
+        #remove empty directories
+        find -depth -type d -empty -exec rmdir {} \;
     ;;
 
     failed-upgrade)
