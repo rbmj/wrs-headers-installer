@@ -1,19 +1,19 @@
-Source: powerpc-wrs-vxworks-wrs-ip1
+Source: wrs-headers-installer
 Section: devel
 Priority: extra
 Maintainer: Robert Blair Mason Jr. <rbmj@verizon.net>
 Build-Depends: debhelper (>= 8.0.0)
-Standards-Version: 3.9.2
-Homepage: https://github.com/rbmj/wrs-ip1
-Vcs-Git: git://github.com/rbmj/wrs-ip1.git
-Vcs-Browser: https://github.com/rbmj/wrs-ip1
+Standards-Version: 3.9.3
+Homepage: https://github.com/rbmj/wrs-headers-installer
+Vcs-Git: git://github.com/rbmj/wrs-headers-installer.git
+Vcs-Browser: https://github.com/rbmj/wrs-headers-installer
 
-Package: powerpc-wrs-vxworks-wrs-ip1
+Package: wrs-headers-installer
 Architecture: all
 Depends: ${misc:Depends}, wget
-Provides: powerpc-wrs-vxworks-wrs-ip
+Provides: wrs-headers-installer
 Description: Dummy Package to provide WindRiver IP for VxWorks
  This package downloads, installs, and configures the WindRiver
  Intellectual Property needed perform builds targeting VxWorks 6.3.
- Though the download scripts provided in the package are free, note
- that the files installed in the download process are NON-FREE.
+ Though the download scripts provided in the dummy package are free,
+ the files installed in the download process are NON-FREE.

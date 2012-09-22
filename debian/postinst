@@ -20,35 +20,47 @@ set -e
 PREFIX="/usr"
 WIND_BASE="$PREFIX/powerpc-wrs-vxworks/wind_base"
 TOOL_DIR="$PREFIX/powerpc-wrs-vxworks"
-TMPDIR="/tmp"
+TMP_DIR=`mktemp -t -d wrs-headers-installer.XXXXXXXXXX` || exit 1
+CONF_DIR="/var/lib/wrs-headers"
+INSTALL_LIST="$CONF_DIR/files"
+GCCDIST_URL="ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip" 
 
 case "$1" in
     configure)
-		#Follow debian policy: instead of overwrite, die.
-		if [ \( -e "$TMPDIR/gccdist.zip" \) -o \( -e "$TMPDIR/gccdist" \) ]
-		then
-			echo "powerpc-wrs-vxworks-wrs-ip: $TMPDIR dirty from an incomplete installation"
-			echo "    Make sure no processes are using $TMPDIR/gccdist.zip and $TMPDIR/gccdist,"
-			echo "    and then remove these files.  Aborting install."
-			exit 1
-		fi
-		
 		#create directories
 		mkdir -p "$WIND_BASE"
 		mkdir -p "$TOOL_DIR"
 		mkdir -p "$WIND_BASE/target"
+		mkdir -p "$CONF_DIR"
 
 		#download gccdist and unzip
-		wget "ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip" -O "$TMPDIR/gccdist.zip"
-		unzip -qo "$TMPDIR/gccdist.zip" -d "$TMPDIR"
+		wget "$GCCDIST_URL" -O "$TMP_DIR/gccdist.zip"
+		unzip -qo "$TMP_DIR/gccdist.zip" -d "$TMP_DIR"
 
 		#copy scripts to proper location
-		cp -R "$TMPDIR/gccdist/WindRiver/vxworks-6.3/host" "$WIND_BASE/host"
+		SCRIPT_LOC="$TMP_DIR/gccdist/WindRiver/vxworks-6.3/host"
+		cp -R "$SCRIPT_LOC" "$WIND_BASE/host"
+		
+		#get list of files just installed
+		find "$SCRIPT_LOC" -type f | sed "s|$SCRIPT_LOC|$WIND_BASE/host|" > $INSTALL_LIST
+
 		#copy headers to proper location
-		cp -R "$TMPDIR/gccdist/WindRiver/vxworks-6.3/target/h" "$TOOL_DIR/sys-include"
+		HEADER_LOC="$TMP_DIR/gccdist/WindRiver/vxworks-6.3/target/h"
+		cp -R "$HEADER_LOC" "$TOOL_DIR/sys-include"
+
+		#get list of files just installed
+		find "$HEADER_LOC" -type f | sed "s|$HEADER_LOC|$TOOL_DIR/sys-include|" >> $INSTALL_LIST
+
 		#make symlink to headers
-		ln -s "$TOOL_DIR/sys-include" "$WIND_BASE/target/h"
-		rm -rf "$TMPDIR/gccdist.zip" "$TMPDIR/gccdist"
+		ln -fs "$TOOL_DIR/sys-include" "$WIND_BASE/target/h" 
+		ln -fs "$TOOL_DIR/sys-include/wrn/coreip" "$TOOL_DIR/include"
+		
+		#take note of symlinks
+		echo "$WIND_BASE/target/h" >> $INSTALL_LIST
+		echo "$TOOL_DIR/include" >> $INSTALL_LIST
+
+		#clean up
+		rm -rf "$TMP_DIR/gccdist.zip" "$TMP_DIR/gccdist"
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

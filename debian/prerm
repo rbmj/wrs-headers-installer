@@ -20,16 +20,17 @@ PREFIX="/usr"
 WIND_BASE="$PREFIX/powerpc-wrs-vxworks/wind_base"
 TOOL_DIR="$PREFIX/powerpc-wrs-vxworks"
 TMPDIR="/tmp"
-
+CONF_DIR="/var/lib/wrs-headers"
+INSTALL_LIST="$CONF_DIR/files"
 
 case "$1" in
     remove|upgrade|deconfigure)
-		#remove stuff in WIND_BASE
-		rm -rf "$WIND_BASE/host"
-		rm -rf "$WIND_BASE/target"
-		#remove sys-include - this should not be messed with by anyone who does
-		#not depend on this package!!!
-		rm -rf "$TOOL_DIR/sys-include"
+        #remove all the files we kept track of
+	cat $INSTALL_LIST | while read f
+	do
+            rm -f "$f"
+        done
+
     ;;
 
     failed-upgrade)
