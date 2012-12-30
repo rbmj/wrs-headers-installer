@@ -21,9 +21,11 @@ PREFIX="/usr"
 WIND_BASE="$PREFIX/powerpc-wrs-vxworks/wind_base"
 TOOL_DIR="$PREFIX/powerpc-wrs-vxworks"
 TMP_DIR=`mktemp -t -d wrs-headers-installer.XXXXXXXXXX` || exit 1
-CONF_DIR="/var/lib/wrs-headers"
-INSTALL_LIST="$CONF_DIR/files"
-GCCDIST_URL="ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip" 
+CONF_DIR="$PREFIX/share/wrs-headers"
+FILES="$CONF_DIR/files"
+MD5SUMS="$CONF_DIR/md5sums"
+GCCDIST_URL="ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip"
+CUR_DIR=`pwd`
 
 case "$1" in
     configure)
@@ -50,22 +52,28 @@ case "$1" in
 		cp -R "$SCRIPT_LOC" "$WIND_BASE"
 		
 		#get list of files just installed
-		find "$SCRIPT_LOC" -type f | sed "s|$SCRIPT_LOC|$WIND_BASE/host|" > $INSTALL_LIST
+		find "$SCRIPT_LOC" -type f | sed "s|$SCRIPT_LOC|$WIND_BASE/host|" > $FILES
 
 		#copy headers to proper location
 		HEADER_LOC="$TMP_DIR/gccdist/WindRiver/vxworks-6.3/target/h"
 		cp -R "$HEADER_LOC/." "$TOOL_DIR/sys-include"
 
 		#get list of files just installed
-		find "$HEADER_LOC" -type f | sed "s|$HEADER_LOC|$TOOL_DIR/sys-include|" >> $INSTALL_LIST
+		find "$HEADER_LOC" -type f | sed "s|$HEADER_LOC|$TOOL_DIR/sys-include|" >> $FILES
+		
+		#get md5sums
+		while read line
+		do
+			md5sum $line >> $MD5SUMS
+		done < $FILES
 
 		#make symlink to headers
 		ln -fs "$TOOL_DIR/sys-include" "$WIND_BASE/target/h" 
 		ln -fs "$TOOL_DIR/sys-include/wrn/coreip" "$TOOL_DIR/include"
 		
 		#take note of symlinks
-		echo "$WIND_BASE/target/h" >> $INSTALL_LIST
-		echo "$TOOL_DIR/include" >> $INSTALL_LIST
+		echo "$WIND_BASE/target/h" >> $FILES
+		echo "$TOOL_DIR/include" >> $FILES
 
 		#clean up
 		rm -rf "$TMP_DIR"

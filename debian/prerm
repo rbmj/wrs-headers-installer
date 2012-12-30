@@ -19,19 +19,32 @@ set -e
 PREFIX="/usr"
 WIND_BASE="$PREFIX/powerpc-wrs-vxworks/wind_base"
 TOOL_DIR="$PREFIX/powerpc-wrs-vxworks"
-TMPDIR="/tmp"
-CONF_DIR="/var/lib/wrs-headers"
-INSTALL_LIST="$CONF_DIR/files"
+TMP_DIR=`mktemp -t -d wrs-headers-installer.XXXXXXXXXX` || exit 1
+CONF_DIR="$PREFIX/share/wrs-headers"
+FILES="$CONF_DIR/files"
+MD5SUMS="$CONF_DIR/md5sums"
+CUR_DIR=`pwd`
 
 case "$1" in
     remove|upgrade|deconfigure)
         #remove all the files we kept track of
-	cat $INSTALL_LIST | while read f
-	do
-            rm -f "$f"
-        done
+	while read line ; do
+            if [ -f "$line" ] ; then
+                if grep "$line" $MD5SUMS | md5sum -c > /dev/null 2>&1 ; then
+                    #md5 checks, so the file has not been changed
+                    rm -f "$line"
+                fi
+            else
+                #symlinks and the like
+	        rm -f "$line"
+            fi
+        done < $FILES
+        rm $FILES
+        rm $MD5SUMS
+        rmdir $CONF_DIR > /dev/null 2>&1 || true #remove if empty
         #remove empty directories
-        find -depth -type d -empty -exec rmdir {} \;
+        find $TOOL_DIR -type d -empty -delete
+        rmdir $TOOL_DIR > /dev/null 2>&1 || true #remove if empty
     ;;
 
     failed-upgrade)
