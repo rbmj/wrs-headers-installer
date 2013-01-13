@@ -22,6 +22,7 @@ WIND_BASE="$PREFIX/powerpc-wrs-vxworks/wind_base"
 TOOL_DIR="$PREFIX/powerpc-wrs-vxworks"
 TMP_DIR=`mktemp -t -d wrs-headers-installer.XXXXXXXXXX` || exit 1
 CONF_DIR="$PREFIX/share/wrs-headers"
+LDSCRIPT_DIR="$PREFIX/share/ldscripts"
 FILES="$CONF_DIR/files"
 MD5SUMS="$CONF_DIR/md5sums"
 GCCDIST_URL="ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip"
@@ -34,6 +35,7 @@ case "$1" in
 		mkdir -p "$TOOL_DIR"
 		mkdir -p "$WIND_BASE/target"
 		mkdir -p "$CONF_DIR"
+        mkdir -p "$LDSCRIPT_DIR"
 
 		#download gccdist and unzip
 		echo -n "Downloading gccdist... "
@@ -77,6 +79,9 @@ case "$1" in
 
 		#clean up
 		rm -rf "$TMP_DIR"
+
+        #now do actual post configuration
+        sed '/ENTRY(_start)/d' < $WIND_BASE/target/h/tool/gnu/ldscripts/link.OUT > $LDSCRIPT_DIR/dkm.ld
 
 		echo "done."
 

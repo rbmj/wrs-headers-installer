@@ -21,6 +21,7 @@ WIND_BASE="$PREFIX/powerpc-wrs-vxworks/wind_base"
 TOOL_DIR="$PREFIX/powerpc-wrs-vxworks"
 TMP_DIR=`mktemp -t -d wrs-headers-installer.XXXXXXXXXX` || exit 1
 CONF_DIR="$PREFIX/share/wrs-headers"
+LDSCRIPT_DIR="$PREFIX/share/ldscripts"
 FILES="$CONF_DIR/files"
 MD5SUMS="$CONF_DIR/md5sums"
 CUR_DIR=`pwd`
@@ -45,6 +46,8 @@ case "$1" in
         #remove empty directories
         find $TOOL_DIR -type d -empty -delete
         rmdir $TOOL_DIR > /dev/null 2>&1 || true #remove if empty
+        #remove ldscript
+        rm $LDSCRIPT_DIR/dkm.ld || true
     ;;
 
     failed-upgrade)
