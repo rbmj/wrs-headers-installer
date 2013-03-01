@@ -1,4 +1,0 @@
-#!/bin/sh
-
-dh_make -p wrs-headers-installer_1.0 --createorig --email rbmj@verizon.net -i
-
