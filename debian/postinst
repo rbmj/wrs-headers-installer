@@ -54,20 +54,20 @@ case "$1" in
 		cp -R "$SCRIPT_LOC" "$WIND_BASE"
 		
 		#get list of files just installed
-		find "$SCRIPT_LOC" -type f | sed "s|$SCRIPT_LOC|$WIND_BASE/host|" > $FILES
+		find "$SCRIPT_LOC" -type f | sed "s|$SCRIPT_LOC|$WIND_BASE/host|" > "$FILES"
 
 		#copy headers to proper location
 		HEADER_LOC="$TMP_DIR/gccdist/WindRiver/vxworks-6.3/target/h"
 		cp -R "$HEADER_LOC/." "$TOOL_DIR/sys-include"
 
 		#get list of files just installed
-		find "$HEADER_LOC" -type f | sed "s|$HEADER_LOC|$TOOL_DIR/sys-include|" >> $FILES
+		find "$HEADER_LOC" -type f | sed "s|$HEADER_LOC|$TOOL_DIR/sys-include|" >> "$FILES"
 		
 		#get md5sums
 		while read line
 		do
-			md5sum $line >> $MD5SUMS
-		done < $FILES
+			md5sum "$line" >> "$MD5SUMS"
+		done < "$FILES"
 
 		#make symlink to headers
 		ln -fs "$TOOL_DIR/sys-include" "$WIND_BASE/target/h" 
@@ -77,11 +77,12 @@ case "$1" in
 		echo "$WIND_BASE/target/h" >> $FILES
 		echo "$TOOL_DIR/include" >> $FILES
 
+        #Add in a link script
+        sed '/ENTRY(_start)/d' < "$WIND_BASE/target/h/tool/gnu/ldscripts/link.OUT" > "$LDSCRIPT_DIR/dkm.ld"
+        echo "$LDSCRIPT_DIR/dkm.ld" >> $FILES
+
 		#clean up
 		rm -rf "$TMP_DIR"
-
-        #now do actual post configuration
-        sed '/ENTRY(_start)/d' < $WIND_BASE/target/h/tool/gnu/ldscripts/link.OUT > $LDSCRIPT_DIR/dkm.ld
 
 		echo "done."
 
