@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/rbmj/wrs-headers-installer
 Package: wrs-headers-installer
 Architecture: all
 Depends: ${misc:Depends}, wget
-Provides: wrs-headers-installer
+Provides: wrs-headers
 Description: Dummy Package to provide WindRiver IP for VxWorks
  This package downloads, installs, and configures the WindRiver
  Intellectual Property needed perform builds targeting VxWorks 6.3.
